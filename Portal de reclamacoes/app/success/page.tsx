@@ -15,7 +15,7 @@ export default function SuccessPage() {
 
     if (seconds === 0) {
       clearInterval(timer); 
-      router.push("/"); // Redireciona para a página inicial
+      router.push("/"); 
     }
 
     return () => clearInterval(timer);
@@ -23,7 +23,6 @@ export default function SuccessPage() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-white p-6">
-      {/* Título animado */}
       <motion.h1
         className="text-4xl font-bold text-center text-black mb-4"
         initial={{ opacity: 0, y: -50 }}  
@@ -33,21 +32,20 @@ export default function SuccessPage() {
         Reclamação Enviada com Sucesso!
       </motion.h1>
 
-      {/* Mensagem animada */}
+    
       <motion.p
         className="text-lg text-center text-gray-700 mb-6"
         initial={{ opacity: 0 }}        
         animate={{ opacity: 1 }}       
         transition={{ delay: 0.3, duration: 0.7 }} 
       >
-        Sua reclamação foi registrada com sucesso.
+        A sua reclamação foi registrada com sucesso.
       </motion.p>
 
-      {/* Botões */}
+  
       <div className="flex flex-col gap-4">
-        {/* Botão Voltar à Página Anterior */}
         <motion.button
-          onClick={() => router.back()} // Voltar à página anterior
+          onClick={() => router.back()} 
           className="px-6 py-3 bg-gray-500 text-white font-bold rounded-lg shadow-lg hover:bg-gray-600 transition"
           whileHover={{ scale: 1.05 }} 
           whileTap={{ scale: 0.95 }}
@@ -55,7 +53,7 @@ export default function SuccessPage() {
           Voltar à Página Anterior
         </motion.button>
 
-        {/* Botão Voltar à Home */}
+       
         <motion.button
           onClick={() => router.push("/")}
           className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition"
@@ -66,14 +64,13 @@ export default function SuccessPage() {
         </motion.button>
       </div>
 
-      {/* Timer - para redirecionamento automático */}
       <motion.p
         className="text-center text-gray-500 mt-4"
         initial={{ opacity: 0 }}        
         animate={{ opacity: 1 }}       
         transition={{ delay: 0.5, duration: 0.7 }} 
       >
-        Você será redirecionado automaticamente em {seconds} segundos.
+      Será redirecionado automaticamente em {seconds} segundos.
       </motion.p>
     </main>
   );
