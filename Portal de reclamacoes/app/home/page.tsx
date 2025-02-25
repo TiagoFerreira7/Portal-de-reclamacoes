@@ -9,31 +9,21 @@ export default function ComplaintPage() {
     email: "",
     category: "Serviço",
     complaint: "",
+    productType: "",   
+    incidentDate: "",   
   });
 
   const [files, setFiles] = useState<File[]>([]);
-  const [complaints, setComplaints] = useState<any[]>([]); 
+  const [complaints, setComplaints] = useState<any[]>([]);
   const [isClient, setIsClient] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null); // Controla qual FAQ está expandido
   const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-
-  
     const savedComplaints = JSON.parse(localStorage.getItem('complaints') || '[]');
     setComplaints(savedComplaints);
-  }, [isDarkMode]);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -47,182 +37,202 @@ export default function ComplaintPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.complaint) {
-      alert("Por favor, preencha todos os campos!");
+    if (!form.name || !form.email || !form.complaint || !form.incidentDate) {
+      alert("Por favor, preencha todos os campos obrigatórios!");
       return;
     }
 
-  
     const newComplaints = [...complaints, { ...form, files }];
     setComplaints(newComplaints);
 
-    
     localStorage.setItem('complaints', JSON.stringify(newComplaints));
 
-  
-    setForm({ name: "", email: "", category: "Serviço", complaint: "" });
+    setForm({ name: "", email: "", category: "Serviço", complaint: "", productType: "", incidentDate: "" });
     setFiles([]);
 
-    
     if (isClient) {
       router.push("/success");
     }
   };
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+  const toggleFAQ = (index: number) => {
+    setExpandedFAQ(expandedFAQ === index ? null : index);
   };
 
   return (
-    <main className={`flex flex-col items-center justify-center min-h-screen p-6 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
-      <div className="absolute top-4 right-4">
-      <motion.button
-        onClick={toggleTheme}
-        className="flex items-center bg-gray-300 dark:bg-gray-700 p-2 rounded-full overflow-hidden w-16 h-8"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        <span className="mr-2">{isDarkMode ? '🌙' : '☀️'}</span>
-        <motion.div
-        className={`w-6 h-6 bg-white rounded-full shadow-md ${isDarkMode ? 'translate-x-8' : 'translate-x-0'}`}
-        initial={{ x: isDarkMode ? 8 : 0 }}
-        animate={{ x: isDarkMode ? 8 : 0 }}
-        transition={{ type: "", stiffness: 7000, damping: 300 }}
-        />
-      </motion.button>
-      </div>
-
+    <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-100 text-black">
       <motion.h1
-      className="text-4xl font-bold mb-2 text-center dark:text-white"
-      initial={{ opacity: 0, y: -50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7 }}
-      >
-      Submeter Reclamação
-      </motion.h1>
-
-      <motion.h2
-      className="text-lg mb-6 text-center dark:text-white"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
-      >
-      Preencha todos os campos antes de submeter.
-      </motion.h2>
-
-      <motion.form
-      onSubmit={handleSubmit}
-      className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md"
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
-      >
-      <label className="block mb-2 font-semibold text-black dark:text-white">Nome</label>
-      <input
-        type="text"
-        name="name"
-        className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 mb-4 bg-transparent dark:bg-gray-700"
-        placeholder="Digite o seu nome"
-        value={form.name}
-        onChange={handleChange}
-        required
-      />
-
-      <label className="block mb-2 font-semibold text-black dark:text-white">Email</label>
-      <input
-        type="email"
-        name="email"
-        className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 mb-4 bg-transparent dark:bg-gray-700"
-        placeholder="Digite o seu email"
-        value={form.email}
-        onChange={handleChange}
-        required
-      />
-
-      <label className="block mb-2 font-semibold text-black dark:text-white">Categoria</label>
-      <select
-        name="category"
-        className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 mb-4 bg-transparent dark:bg-gray-700 text-black dark:text-white"
-        value={form.category}
-        onChange={handleChange}
-      >
-        <option value="Serviço" className="text-black dark:text-white">Serviço</option>
-        <option value="Produto" className="text-black dark:text-white">Produto</option>
-        <option value="Atendimento" className="text-black dark:text-white">Atendimento</option>
-        <option value="Outro" className="text-black dark:text-white">Outro</option>
-      </select>
-
-      <label className="block mb-2 font-semibold text-black dark:text-white">Descrição</label>
-      <textarea
-        name="complaint"
-        className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-transparent dark:bg-gray-700"
-        rows={4}
-        placeholder="Descreva a sua reclamação..."
-        value={form.complaint}
-        onChange={handleChange}
-        required
-      />
-
-      <label className="block mb-2 font-semibold text-black dark:text-white">Anexar Ficheiros</label>
-      <input
-        type="file"
-        className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-transparent dark:bg-gray-700 text-black dark:text-white"
-        onChange={handleFileChange}
-        accept=".jpg,.png,.pdf"
-        multiple
-      />
-      {files.length > 0 && (
-        <div className="mt-4">
-        {files.map((f, index) => (
-          <div key={index} className="mb-2">
-          <p className="text-black dark:text-white">Ficheiro: {f.name}</p>
-          {f.size > 5 * 1024 * 1024 && (
-            <p className="text-red-500">O ficheiro excede o tamanho máximo de 5MB.</p>
-          )}
-          {f.type.startsWith("image/") && f.size <= 5 * 1024 * 1024 && (
-            <img
-            src={URL.createObjectURL(f)}
-            alt="Preview"
-            className="mt-2 max-w-full h-auto rounded-md"
-            />
-          )}
-          </div>
-        ))}
-        </div>
-      )}
-
-      <motion.button
-        type="submit"
-        className="mt-4 w-full px-6 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        Enviar Reclamação
-      </motion.button>
-      </motion.form>
-
-      {/* Exibição das Reclamações Enviadas */}
-      <div className="mt-8 w-full max-w-md">
-      <motion.h3
-        className="text-2xl font-bold mb-4 dark:text-white"
+        className="text-3xl font-bold mb-4 text-center"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
-        Reclamações Enviadas
-      </motion.h3>
-      {complaints.length > 0 ? (
-        complaints.map((complaint, index) => (
-          <div key={index} className="border p-4 rounded-md mt-2 bg-gray-100 dark:bg-gray-700">
-        <p className="text-black dark:text-white"><strong>Nome:</strong> {complaint.name}</p>
-        <p className="text-black dark:text-white"><strong>Email:</strong> {complaint.email}</p>
-        <p className="text-black dark:text-white"><strong>Categoria:</strong> {complaint.category}</p>
-        <p className="text-black dark:text-white"><strong>Reclamação:</strong> {complaint.complaint}</p>
+        Submeter Reclamação
+      </motion.h1>
+
+      <motion.h2
+        className="text-lg mb-6 text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        Preencha todos os campos antes de submeter.
+      </motion.h2>
+
+      <div className="w-full max-w-7xl flex flex-col lg:flex-row gap-8">
+        <motion.form
+          onSubmit={handleSubmit}
+          className="bg-white p-6 rounded-lg shadow-lg w-full lg:w-3/5"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <label className="block mb-2 font-semibold">Nome</label>
+          <input
+            type="text"
+            name="name"
+            className="w-full border border-gray-300 rounded-md p-2 mb-4"
+            placeholder="Digite o seu nome"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
+
+          <label className="block mb-2 font-semibold">Email</label>
+          <input
+            type="email"
+            name="email"
+            className={`w-full border ${form.email ? 'border-green-500' : 'border-gray-300'} rounded-md p-2 mb-4`}
+            placeholder="Digite o seu email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+
+          <label className="block mb-2 font-semibold">Categoria</label>
+          <select
+            name="category"
+            className="w-full border border-gray-300 rounded-md p-2 mb-4"
+            value={form.category}
+            onChange={handleChange}
+          >
+            <option value="Serviço">Serviço</option>
+            <option value="Produto">Produto</option>
+            <option value="Atendimento">Atendimento</option>
+            <option value="Outro">Outro</option>
+          </select>
+
+          <label className="block mb-2 font-semibold">Descrição</label>
+          <textarea
+            name="complaint"
+            className="w-full border border-gray-300 rounded-md p-2 mb-4"
+            rows={3}
+            placeholder="Descreva a sua reclamação..."
+            value={form.complaint}
+            onChange={handleChange}
+            required
+          />
+
+          {form.category === "Produto" && (
+            <div>
+              <label className="block mb-2 font-semibold">Tipo de Produto</label>
+              <select
+                name="productType"
+                className="w-full border border-gray-300 rounded-md p-2 mb-4"
+                value={form.productType}
+                onChange={handleChange}
+              >
+                <option value="Com Defeito">Com Defeito</option>
+                <option value="Com Defeito">Não Funcional</option>
+                <option value="Atrasado">Atrasado</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+          )}
+
+          <label className="block mb-2 font-semibold">Data do Ocorrido</label>
+          <input
+            type="date"
+            name="incidentDate"
+            className="w-full border border-gray-300 rounded-md p-2 mb-4"
+            value={form.incidentDate}
+            onChange={handleChange}
+            required
+          />
+
+          <label className="block mb-2 font-semibold">Anexar Ficheiros</label>
+          <input
+            type="file"
+            className="w-full border border-gray-300 rounded-md p-2"
+            onChange={handleFileChange}
+            accept=".jpg,.png,.pdf"
+            multiple
+          />
+          {files.length > 0 && (
+            <div className="mt-4">
+              {files.map((f, index) => (
+                <div key={index} className="mb-2">
+                  <p>Ficheiro: {f.name}</p>
+                  {f.type.startsWith('image') && (
+                    <img src={URL.createObjectURL(f)} alt={f.name} className="w-24 h-24 object-cover mt-2" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <motion.button
+            type="submit"
+            className="mt-4 w-full px-6 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Enviar Reclamação
+          </motion.button>
+        </motion.form>
+
+        <motion.div
+          className="bg-gray-100 p-4 rounded-lg shadow-lg w-full lg:w-1/3"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          id="faq"
+        >
+          <h4 className="text-lg font-bold mb-4">Perguntas Frequentes</h4>
+          <div className="space-y-4">
+          {[
+            { question: "Como posso alterar ou excluir a minha reclamação?", answer: "Atualmente, não é possível editar ou excluir reclamações diretamente após o envio. Se precisar de alguma alteração, entre em contato com nossa equipe de suporte." },
+            { question: "Qual é o prazo para receber uma resposta?", answer: "Normalmente, respondemos dentro de 7 a 10 dias úteis. Se o seu caso for urgente, por favor, avise-nos no campo de descrição da reclamação." },
+            { question: "Como posso acompanhar o status da minha reclamação?", answer: "Você receberá atualizações por e-mail sobre o andamento da sua reclamação. Fique atento à sua caixa de entrada." },
+            { question: "Posso fazer uma reclamação anónima?", answer: "Para garantir que possamos processar sua reclamação de forma adequada e responder, é necessário fornecer o seu nome e e-mail. A confidencialidade será mantida." },
+            { question: "Posso submeter uma reclamação sobre uma empresa ou serviço fora do meu país?", answer: "Sim, pode. No entanto, recomenda-se fornecer o máximo de informações possíveis para facilitar o processo de investigação." }
+          ].map((item, index) => (
+            <div key={index} className="bg-white p-4 rounded-md shadow-sm cursor-pointer" onClick={() => toggleFAQ(index)}>
+              <div className="flex justify-between items-center">
+                <h5 className="text-sm font-semibold text-gray-700">{item.question}</h5>
+                <motion.div
+                  animate={{ rotate: expandedFAQ === index ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="text-gray-500"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
+                    <path d="M1.5 6L8 12.5 14.5 6h-13z"/>
+                  </svg>
+                </motion.div>
+              </div>
+              <motion.div
+                animate={{ height: expandedFAQ === index ? "auto" : 0 }}
+                transition={{ duration: 0.3 }}
+                className="text-sm text-gray-600 mt-2"
+              >
+                {expandedFAQ === index && <p>{item.answer}</p>}
+              </motion.div>
+            </div>
+          ))
+          }
+          
           </div>
-        ))
-      ) : (
-        <p className="text-center text-gray-500 dark:text-gray-400">Ainda não há reclamações enviadas.</p>
-      )}
+        </motion.div>
       </div>
     </main>
   );
