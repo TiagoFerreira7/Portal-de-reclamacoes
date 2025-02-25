@@ -12,28 +12,25 @@ export default function ComplaintPage() {
   });
 
   const [files, setFiles] = useState<File[]>([]);
-  const [complaints, setComplaints] = useState<any[]>([]); // Guardando as reclamações enviadas
+  const [complaints, setComplaints] = useState<any[]>([]); 
   const [isClient, setIsClient] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
-    // Apply dark mode class to html element
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    // Recuperar as reclamações do localStorage
-    // Apply dark mode class to html element
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
 
-    // Recuperar as reclamações do localStorage
+  
     const savedComplaints = JSON.parse(localStorage.getItem('complaints') || '[]');
     setComplaints(savedComplaints);
   }, [isDarkMode]);
@@ -55,18 +52,18 @@ export default function ComplaintPage() {
       return;
     }
 
-    // Adicionando a nova reclamação na lista
+  
     const newComplaints = [...complaints, { ...form, files }];
     setComplaints(newComplaints);
 
-    // Salvando as reclamações no localStorage
+    
     localStorage.setItem('complaints', JSON.stringify(newComplaints));
 
-    // Limpar o formulário
+  
     setForm({ name: "", email: "", category: "Serviço", complaint: "" });
     setFiles([]);
 
-    // Redirecionar para a página de agradecimento
+    
     if (isClient) {
       router.push("/success");
     }
