@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import DOMPurify from 'dompurify';
+import { FaEnvelope, FaUser, FaTag, FaFileAlt, FaRegCalendarAlt, FaPaperclip } from 'react-icons/fa'; // Adicionando ícones
 
 export default function ComplaintPage() {
   const [form, setForm] = useState({
@@ -16,17 +18,31 @@ export default function ComplaintPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [complaints, setComplaints] = useState<any[]>([]);
   const [isClient, setIsClient] = useState(false);
-  const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null); // Controla qual FAQ está expandido
+  const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
     const savedComplaints = JSON.parse(localStorage.getItem('complaints') || '[]');
     setComplaints(savedComplaints);
+
+    const savedForm = JSON.parse(localStorage.getItem('form') || '{"name": "", "email": "", "category": "Serviço", "complaint": "", "productType": "", "incidentDate": ""}');
+    setForm(savedForm);
+    const savedFiles = JSON.parse(localStorage.getItem('files') || '[]');
+    setFiles(savedFiles);
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem('form', JSON.stringify(form));
+  }, [form]);
+
+  useEffect(() => {
+    localStorage.setItem('files', JSON.stringify(files));
+  }, [files]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: DOMPurify.sanitize(value || "") });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +65,8 @@ export default function ComplaintPage() {
 
     setForm({ name: "", email: "", category: "Serviço", complaint: "", productType: "", incidentDate: "" });
     setFiles([]);
+    localStorage.removeItem('form');
+    localStorage.removeItem('files');
 
     if (isClient) {
       router.push("/success");
@@ -87,18 +105,24 @@ export default function ComplaintPage() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <label className="block mb-2 font-semibold">Nome</label>
+          <label className="block mb-2 font-semibold flex items-center">
+            <FaUser className="mr-2 text-lg" />
+            Nome
+          </label>
           <input
             type="text"
             name="name"
             className="w-full border border-gray-300 rounded-md p-2 mb-4"
             placeholder="Digite o seu nome"
-            value={form.name}
+            value={form.name || ""}
             onChange={handleChange}
             required
           />
 
-          <label className="block mb-2 font-semibold">Email</label>
+          <label className="block mb-2 font-semibold flex items-center">
+            <FaEnvelope className="mr-2 text-lg" />
+            Email
+          </label>
           <input
             type="email"
             name="email"
@@ -109,11 +133,14 @@ export default function ComplaintPage() {
             required
           />
 
-          <label className="block mb-2 font-semibold">Categoria</label>
+          <label className="block mb-2 font-semibold flex items-center">
+            <FaTag className="mr-2 text-lg" />
+            Categoria
+          </label>
           <select
             name="category"
             className="w-full border border-gray-300 rounded-md p-2 mb-4"
-            value={form.category}
+            value={form.category || "Serviço"}  
             onChange={handleChange}
           >
             <option value="Serviço">Serviço</option>
@@ -122,7 +149,10 @@ export default function ComplaintPage() {
             <option value="Outro">Outro</option>
           </select>
 
-          <label className="block mb-2 font-semibold">Descrição</label>
+          <label className="block mb-2 font-semibold flex items-center">
+            <FaFileAlt className="mr-2 text-lg" />
+            Descrição
+          </label>
           <textarea
             name="complaint"
             className="w-full border border-gray-300 rounded-md p-2 mb-4"
@@ -135,7 +165,10 @@ export default function ComplaintPage() {
 
           {form.category === "Produto" && (
             <div>
-              <label className="block mb-2 font-semibold">Tipo de Produto</label>
+              <label className="block mb-2 font-semibold flex items-center">
+                <FaTag className="mr-2 text-lg" />
+                Tipo de Produto
+              </label>
               <select
                 name="productType"
                 className="w-full border border-gray-300 rounded-md p-2 mb-4"
@@ -143,14 +176,17 @@ export default function ComplaintPage() {
                 onChange={handleChange}
               >
                 <option value="Com Defeito">Com Defeito</option>
-                <option value="Com Defeito">Não Funcional</option>
+                <option value="Não Funcional">Não Funcional</option>
                 <option value="Atrasado">Atrasado</option>
                 <option value="Outro">Outro</option>
               </select>
             </div>
           )}
 
-          <label className="block mb-2 font-semibold">Data do Ocorrido</label>
+          <label className="block mb-2 font-semibold flex items-center">
+            <FaRegCalendarAlt className="mr-2 text-lg" />
+            Data do Ocorrido
+          </label>
           <input
             type="date"
             name="incidentDate"
@@ -158,14 +194,21 @@ export default function ComplaintPage() {
             value={form.incidentDate}
             onChange={handleChange}
             required
+            max={new Date().toISOString().split("T")[0]}
           />
+          {form.incidentDate && new Date(form.incidentDate) > new Date() && (
+            <p className="text-red-500 text-sm mt-1">A data não pode ser no futuro.</p>
+          )}
 
-          <label className="block mb-2 font-semibold">Anexar Ficheiros</label>
+          <label className="block mb-2 font-semibold flex items-center">
+            <FaPaperclip className="mr-2 text-lg" />
+            Anexar Ficheiros (somente .jpg, .png, .pdf, .mp4)
+          </label>
           <input
             type="file"
             className="w-full border border-gray-300 rounded-md p-2"
             onChange={handleFileChange}
-            accept=".jpg,.png,.pdf"
+            accept=".jpg,.png,.pdf,.mp4"
             multiple
           />
           {files.length > 0 && (
@@ -175,6 +218,12 @@ export default function ComplaintPage() {
                   <p>Ficheiro: {f.name}</p>
                   {f.type.startsWith('image') && (
                     <img src={URL.createObjectURL(f)} alt={f.name} className="w-24 h-24 object-cover mt-2" />
+                  )}
+                  {f.type === 'video/mp4' && (
+                    <video controls className="w-24 h-24 object-cover mt-2">
+                      <source src={URL.createObjectURL(f)} type="video/mp4" />
+                      O seu navegador não suporta o elemento de vídeo.
+                    </video>
                   )}
                 </div>
               ))}
@@ -230,7 +279,6 @@ export default function ComplaintPage() {
             </div>
           ))
           }
-          
           </div>
         </motion.div>
       </div>
