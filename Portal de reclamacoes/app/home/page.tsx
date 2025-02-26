@@ -252,7 +252,7 @@ export default function ComplaintPage() {
           {[
             { question: "Como posso alterar ou excluir a minha reclamação?", answer: "Atualmente, não é possível editar ou excluir reclamações diretamente após o envio. Se precisar de alguma alteração, entre em contato com nossa equipe de suporte." },
             { question: "Qual é o prazo para receber uma resposta?", answer: "Normalmente, respondemos dentro de 7 a 10 dias úteis. Se o seu caso for urgente, por favor, avise-nos no campo de descrição da reclamação." },
-            { question: "Como posso acompanhar o status da minha reclamação?", answer: "Você receberá atualizações por e-mail sobre o andamento da sua reclamação. Fique atento à sua caixa de entrada." },
+            { question: "Como posso acompanhar o estado da minha reclamação?", answer: "Você receberá atualizações por e-mail sobre o andamento da sua reclamação. Fique atento à sua caixa de entrada." },
             { question: "Posso fazer uma reclamação anónima?", answer: "Para garantir que possamos processar sua reclamação de forma adequada e responder, é necessário fornecer o seu nome e e-mail. A confidencialidade será mantida." },
             { question: "Posso submeter uma reclamação sobre uma empresa ou serviço fora do meu país?", answer: "Sim, pode. No entanto, recomenda-se fornecer o máximo de informações possíveis para facilitar o processo de investigação." }
           ].map((item, index) => (
