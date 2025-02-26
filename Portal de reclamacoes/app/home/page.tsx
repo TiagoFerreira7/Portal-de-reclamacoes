@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import DOMPurify from 'dompurify';
 import { FaEnvelope, FaUser, FaTag, FaFileAlt, FaRegCalendarAlt, FaPaperclip } from 'react-icons/fa';
-import ReCAPTCHA from "react-google-recaptcha";
 
 export default function ComplaintPage() {
   const [form, setForm] = useState({
@@ -20,7 +19,6 @@ export default function ComplaintPage() {
   const [complaints, setComplaints] = useState<any[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
-  const [captchaValue, setCaptchaValue] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -55,8 +53,8 @@ export default function ComplaintPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.complaint || !form.incidentDate || !captchaValue) {
-      alert("Por favor, preencha todos os campos obrigatórios e complete o reCAPTCHA!");
+    if (!form.name || !form.email || !form.complaint || !form.incidentDate ){
+      alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
@@ -234,12 +232,6 @@ export default function ComplaintPage() {
               ))}
             </div>
           )}
-          <div className="mt-4">
-            <ReCAPTCHA
-              sitekey="6LeBS-MqAAAAAOc6utRpF442Xr1bMyrTY8f1kabK"
-              onChange={(value: string | null) => setCaptchaValue(value)} 
-            />
-          </div>
           <motion.button
             type="submit"
             className="mt-4 w-full px-6 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition"
