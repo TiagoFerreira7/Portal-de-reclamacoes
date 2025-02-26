@@ -84,6 +84,7 @@ export default function ComplaintPage() {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
+        tabIndex={0}
       >
         Submeter Reclamação
       </motion.h1>
@@ -93,6 +94,7 @@ export default function ComplaintPage() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
+        tabIndex={0}
       >
         Preencha todos os campos antes de submeter.
       </motion.h2>
@@ -117,22 +119,23 @@ export default function ComplaintPage() {
             value={form.name || ""}
             onChange={handleChange}
             required
+            aria-required="true"
           />
 
-          <label className="block mb-2 font-semibold flex items-center">
-            <FaEnvelope className="mr-2 text-lg" />
-            Email
-          </label>
-          <input
-            type="email"
-            name="email"
-            className={`w-full border ${form.email ? 'border-green-500' : 'border-gray-300'} rounded-md p-2 mb-4`}
-            placeholder="Digite o seu email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-
+          
+  <label className="block mb-2 font-semibold flex items-center">
+    <FaEnvelope className="mr-2 text-lg" />
+    Email
+  </label>
+  <input
+    type="email"
+    name="email"
+    className={`w-full border ${form.email && /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(form.email) ? 'border-green-500' : 'border-gray-300'} rounded-md p-2 mb-4`}
+    placeholder="Digite o seu email"
+    value={form.email}
+    onChange={handleChange}
+    required
+  />
           <label className="block mb-2 font-semibold flex items-center">
             <FaTag className="mr-2 text-lg" />
             Categoria
